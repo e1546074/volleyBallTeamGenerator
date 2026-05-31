@@ -70,8 +70,7 @@ function calculatePositionScore(player, position) {
     }
     
     // Scale to 0-10 range
-    const positionScore = (weightedSum / 100) * 10;
-    return Math.round(positionScore * 100) / 100;
+    return positionScore = (weightedSum / 100)*100 ;
 }
 
 /**
