@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volleyball Team Builder</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Volleyball Team Builder</h1>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Player List View -->
+            <section id="player-list-view" class="view active">
+                <div class="view-header">
+                    <h2>Player Management</h2>
+                    <div class="action-buttons">
+                        <button id="add-player-btn" class="btn btn-primary">Add Player</button>
+                        <button id="edit-player-btn" class="btn btn-secondary" disabled>Edit</button>
+                        <button id="delete-player-btn" class="btn btn-danger" disabled>Delete</button>
+                        <button id="confirm-selection-btn" class="btn btn-success" disabled>Confirm Selection</button>
+                    </div>
+                </div>
+                
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                
+                <div class="table-container">
+                    <table id="player-table" class="player-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Overall Score</th>
+                                <th>Preferences</th>
+                            </tr>
+                        </thead>
+                        <tbody id="player-table-body">
+                            <!-- Player rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="no-players-message" class="no-players-message" style="display: none;">
+                    No players available. Click "Add Player" to get started.
+                </div>
+            </section>
+
+            <!-- Team Generation View -->
+            <section id="team-generation-view" class="view" style="display: none;">
+                <div class="view-header">
+                    <h2>Team Generation Results</h2>
+                    <button id="back-to-players-btn" class="btn btn-secondary">Back to Player List</button>
+                </div>
+                
+                <div id="team-info" class="team-info"></div>
+                
+                <div id="teams-container" class="teams-container">
+                    <!-- Teams will be inserted here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Version 1.0.0</p>
+        </footer>
+    </div>
+
+    <!-- Add/Edit Player Modal -->
+    <div id="player-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add Player</h3>
+                <button id="close-modal-btn" class="close-btn">&times;</button>
+            </div>
+            
+            <form id="player-form" class="player-form">
+                <div class="form-group">
+                    <label for="player-name">Name:</label>
+                    <input type="text" id="player-name" class="form-input" required>
+                </div>
+
+                <div class="form-section">
+                    <h4>Ratings (0-10)</h4>
+                    <div class="ratings-grid">
+                        <div class="rating-group">
+                            <label for="height-rating">Height:</label>
+                            <input type="range" id="height-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="height-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="vertical-jump-rating">Vertical Jump:</label>
+                            <input type="range" id="vertical-jump-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="vertical-jump-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="speed-agility-rating">Speed/Agility:</label>
+                            <input type="range" id="speed-agility-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="speed-agility-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="spiking-rating">Spiking:</label>
+                            <input type="range" id="spiking-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="spiking-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="blocking-rating">Blocking:</label>
+                            <input type="range" id="blocking-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="blocking-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="setting-rating">Setting:</label>
+                            <input type="range" id="setting-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="setting-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="passing-rating">Passing:</label>
+                            <input type="range" id="passing-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="passing-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="defense-rating">Defense:</label>
+                            <input type="range" id="defense-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="defense-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="serving-rating">Serving:</label>
+                            <input type="range" id="serving-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="serving-value">5.0</span>
+                        </div>
+                        <div class="rating-group">
+                            <label for="game-iq-rating">Game IQ:</label>
+                            <input type="range" id="game-iq-rating" class="slider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="game-iq-value">5.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4>Position Preferences</h4>
+                    <div class="preferences-grid">
+                        <div class="form-group">
+                            <label for="first-preference">First Preference:</label>
+                            <select id="first-preference" class="form-select" required>
+                                <option value="Setter">Setter</option>
+                                <option value="Middle Blocker">Middle Blocker</option>
+                                <option value="Outside Hitter">Outside Hitter</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="second-preference">Second Preference:</label>
+                            <select id="second-preference" class="form-select" required>
+                                <option value="Setter">Setter</option>
+                                <option value="Middle Blocker">Middle Blocker</option>
+                                <option value="Outside Hitter">Outside Hitter</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4>Position-Specific Scores</h4>
+                    <div class="position-scores">
+                        <div class="position-score">
+                            <span class="position-label">Setter:</span>
+                            <span class="score-value" id="setter-score">0.0</span>
+                        </div>
+                        <div class="position-score">
+                            <span class="position-label">Middle Blocker:</span>
+                            <span class="score-value" id="middle-blocker-score">0.0</span>
+                        </div>
+                        <div class="position-score">
+                            <span class="position-label">Outside Hitter:</span>
+                            <span class="score-value" id="outside-hitter-score">0.0</span>
+                        </div>
+                        <div class="position-score">
+                            <span class="position-label">Overall:</span>
+                            <span class="score-value" id="overall-score">0.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" id="cancel-modal-btn" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal for Delete -->
+    <div id="confirm-delete-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Delete</h3>
+                <button id="close-confirm-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the selected player(s)? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-delete-btn" class="btn btn-danger">Delete</button>
+                <button id="cancel-delete-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/algorithm.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

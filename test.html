@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Volleyball Team Builder - Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .test-result { margin: 10px 0; padding: 10px; background: #f0f0f0; border-radius: 3px; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        button { padding: 8px 16px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Volleyball Team Builder - Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>1. Data Module Tests</h2>
+        <button onclick="testDataModule()">Run Data Tests</button>
+        <div id="data-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Algorithm Module Tests</h2>
+        <button onclick="testAlgorithmModule()">Run Algorithm Tests</button>
+        <div id="algorithm-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Performance Test</h2>
+        <button onclick="testPerformance()">Run Performance Test</button>
+        <div id="performance-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Sample Data Creation</h2>
+        <button onclick="createTestData()">Create Sample Players</button>
+        <div id="sample-results"></div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/algorithm.js"></script>
+    <script>
+        // Test functions
+        function addResult(containerId, testName, passed, message) {
+            const container = document.getElementById(containerId);
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            resultDiv.innerHTML = `<strong>${testName}:</strong> ${passed ? 'PASS' : 'FAIL'} - ${message}`;
+            container.appendChild(resultDiv);
+        }
+
+        function testDataModule() {
+            const results = document.getElementById('data-results');
+            results.innerHTML = '';
+            
+            try {
+                // Test UUID generation
+                const uuid1 = generateUUID();
+                const uuid2 = generateUUID();
+                addResult('data-results', 'UUID Generation', uuid1 && uuid2 && uuid1 !== uuid2, 
+                    `Generated UUIDs: ${uuid1}, ${uuid2}`);
+
+                // Test overall score calculation
+                const testRatings = {
+                    height: 8, verticalJump: 7, speedAgility: 9, spiking: 8, blocking: 6,
+                    setting: 5, passing: 7, defense: 8, serving: 7, gameIQ: 8
+                };
+                const overallScore = calculateOverallScore(testRatings);
+                const expectedScore = (8+7+9+8+6+5+7+8+7+8)/10;
+                addResult('data-results', 'Overall Score Calculation', 
+                    Math.abs(overallScore - expectedScore) < 0.01,
+                    `Calculated: ${overallScore}, Expected: ${expectedScore.toFixed(2)}`);
+
+                // Test player creation
+                const testPlayer = createPlayer({
+                    name: 'Test Player',
+                    ratings: testRatings,
+                    preferences: ['Setter', 'Middle Blocker']
+                });
+                addResult('data-results', 'Player Creation', 
+                    testPlayer.name === 'Test Player' && testPlayer.overallScore === expectedScore,
+                    `Player created with name: ${testPlayer.name}, score: ${testPlayer.overallScore}`);
+
+                // Test localStorage operations
+                const testPlayer2 = addPlayer({ name: 'Storage Test', ratings: testRatings });
+                const loadedPlayers = loadPlayers();
+                const foundPlayer = loadedPlayers.find(p => p.name === 'Storage Test');
+                addResult('data-results', 'LocalStorage Operations', 
+                    foundPlayer !== undefined,
+                    `Player found in storage: ${foundPlayer ? 'Yes' : 'No'}`);
+
+                // Cleanup
+                deletePlayer(testPlayer2.id);
+                
+            } catch (error) {
+                addResult('data-results', 'Data Module', false, `Error: ${error.message}`);
+            }
+        }
+
+        function testAlgorithmModule() {
+            const results = document.getElementById('algorithm-results');
+            results.innerHTML = '';
+            
+            try {
+                // Test position score calculation
+                const testPlayer = {
+                    ratings: {
+                        height: 8, verticalJump: 7, speedAgility: 9, spiking: 8, blocking: 6,
+                        setting: 5, passing: 7, defense: 8, serving: 7, gameIQ: 8
+                    }
+                };
+                
+                const setterScore = calculatePositionScore(testPlayer, 'Setter');
+                // Setter: Setting 40%, Game IQ 30%, Passing 20%, Defense 5%, Serving 5%
+                const expectedSetter = (5*0.4 + 8*0.3 + 7*0.2 + 8*0.05 + 7*0.05) * 10 / 100;
+                addResult('algorithm-results', 'Setter Position Score', 
+                    Math.abs(setterScore - expectedSetter) < 0.01,
+                    `Calculated: ${setterScore}, Expected: ${expectedSetter.toFixed(2)}`);
+
+                const middleBlockerScore = calculatePositionScore(testPlayer, 'Middle Blocker');
+                // Middle Blocker: Blocking 30%, Height 25%, Spiking 20%, Game IQ 15%, Vertical Jump 10%
+                const expectedMB = (6*0.3 + 8*0.25 + 8*0.2 + 8*0.15 + 7*0.1) * 10 / 100;
+                addResult('algorithm-results', 'Middle Blocker Position Score', 
+                    Math.abs(middleBlockerScore - expectedMB) < 0.01,
+                    `Calculated: ${middleBlockerScore}, Expected: ${expectedMB.toFixed(2)}`);
+
+                // Test team size determination
+                const teamSize12 = determineTeamSize(12);
+                addResult('algorithm-results', 'Team Size 12 Players', 
+                    teamSize12 && teamSize12.teamSize === 6 && teamSize12.teamCount === 2,
+                    `Result: ${teamSize12 ? `${teamSize12.teamSize} players x ${teamSize12.teamCount} teams` : 'null'}`);
+
+                const teamSize10 = determineTeamSize(10);
+                addResult('algorithm-results', 'Team Size 10 Players', 
+                    teamSize10 && teamSize10.teamSize === 5 && teamSize10.teamCount === 2,
+                    `Result: ${teamSize10 ? `${teamSize10.teamSize} players x ${teamSize10.teamCount} teams` : 'null'}`);
+
+                const teamSize14 = determineTeamSize(14);
+                addResult('algorithm-results', 'Team Size 14 Players', 
+                    teamSize14 && teamSize14.teamSize === 7 && teamSize14.teamCount === 2,
+                    `Result: ${teamSize14 ? `${teamSize14.teamSize} players x ${teamSize14.teamCount} teams` : 'null'}`);
+
+                // Test invalid team size
+                const teamSize11 = determineTeamSize(11);
+                addResult('algorithm-results', 'Invalid Team Size 11 Players', 
+                    teamSize11 === null,
+                    `Result: ${teamSize11 === null ? 'null (correct)' : 'not null'}`);
+
+                // Test team generation with sample players
+                const samplePlayers = [];
+                for (let i = 0; i < 12; i++) {
+                    samplePlayers.push({
+                        id: `test-${i}`,
+                        name: `Player ${i+1}`,
+                        ratings: {
+                            height: 5 + Math.random() * 5,
+                            verticalJump: 5 + Math.random() * 5,
+                            speedAgility: 5 + Math.random() * 5,
+                            spiking: 5 + Math.random() * 5,
+                            blocking: 5 + Math.random() * 5,
+                            setting: 5 + Math.random() * 5,
+                            passing: 5 + Math.random() * 5,
+                            defense: 5 + Math.random() * 5,
+                            serving: 5 + Math.random() * 5,
+                            gameIQ: 5 + Math.random() * 5
+                        },
+                        preferences: ['Setter', 'Middle Blocker'],
+                        overallScore: 5 + Math.random() * 5
+                    });
+                }
+
+                const teamResult = generateTeams(samplePlayers);
+                addResult('algorithm-results', 'Team Generation 12 Players', 
+                    teamResult && teamResult.teams.length === 2 && teamResult.teamSize === 6,
+                    `Generated ${teamResult ? teamResult.teams.length : 0} teams of ${teamResult ? teamResult.teamSize : 0} players`);
+
+            } catch (error) {
+                addResult('algorithm-results', 'Algorithm Module', false, `Error: ${error.message}`);
+            }
+        }
+
+        function testPerformance() {
+            const results = document.getElementById('performance-results');
+            results.innerHTML = '';
+            
+            try {
+                // Create 100 test players
+                const testPlayers = [];
+                for (let i = 0; i < 100; i++) {
+                    testPlayers.push({
+                        id: `test-${i}`,
+                        name: `Test Player ${i + 1}`,
+                        ratings: {
+                            height: Math.random() * 10,
+                            verticalJump: Math.random() * 10,
+                            speedAgility: Math.random() * 10,
+                            spiking: Math.random() * 10,
+                            blocking: Math.random() * 10,
+                            setting: Math.random() * 10,
+                            passing: Math.random() * 10,
+                            defense: Math.random() * 10,
+                            serving: Math.random() * 10,
+                            gameIQ: Math.random() * 10
+                        },
+                        preferences: ['Setter', 'Middle Blocker'],
+                        overallScore: Math.random() * 10
+                    });
+                }
+
+                // Test with 100 players (5v5 x 20 teams)
+                const startTime = performance.now();
+                const result = generateTeams(testPlayers);
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+
+                const passed = duration < 1000;
+                addResult('performance-results', '100 Players Performance', passed,
+                    `Generated ${result.teams.length} teams in ${duration.toFixed(2)}ms (${passed ? 'PASS' : 'FAIL'})`);
+
+            } catch (error) {
+                addResult('performance-results', 'Performance Test', false, `Error: ${error.message}`);
+            }
+        }
+
+        function createTestData() {
+            const results = document.getElementById('sample-results');
+            results.innerHTML = '';
+            
+            try {
+                // Clear existing data
+                localStorage.removeItem('volleyballPlayers');
+                
+                // Create sample players
+                const samplePlayers = [
+                    {
+                        name: 'John Smith',
+                        ratings: {
+                            height: 8, verticalJump: 7, speedAgility: 9, spiking: 8, blocking: 6,
+                            setting: 5, passing: 7, defense: 8, serving: 7, gameIQ: 8
+                        },
+                        preferences: ['Outside Hitter', 'Setter']
+                    },
+                    {
+                        name: 'Mike Johnson',
+                        ratings: {
+                            height: 9, verticalJump: 8, speedAgility: 7, spiking: 9, blocking: 8,
+                            setting: 4, passing: 6, defense: 7, serving: 8, gameIQ: 7
+                        },
+                        preferences: ['Middle Blocker', 'Outside Hitter']
+                    },
+                    {
+                        name: 'Sarah Williams',
+                        ratings: {
+                            height: 6, verticalJump: 7, speedAgility: 8, spiking: 7, blocking: 5,
+                            setting: 9, passing: 8, defense: 9, serving: 8, gameIQ: 9
+                        },
+                        preferences: ['Setter', 'Outside Hitter']
+                    }
+                ];
+
+                samplePlayers.forEach(playerData => {
+                    addPlayer(playerData);
+                });
+
+                const loadedPlayers = loadPlayers();
+                addResult('sample-results', 'Sample Data Creation', 
+                    loadedPlayers.length >= 3,
+                    `Created ${loadedPlayers.length} sample players`);
+
+            } catch (error) {
+                addResult('sample-results', 'Sample Data Creation', false, `Error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
