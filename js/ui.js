@@ -344,9 +344,9 @@ function renderPlayerRow(player) {
     nameCell.textContent = player.name || 'Unnamed Player';
     row.appendChild(nameCell);
     
-    // Overall Score cell
+    // Overall Score cell - Only show score in edit/create modal, not in table
     const scoreCell = document.createElement('td');
-    scoreCell.textContent = formatScore(player.overallScore || 0);
+    scoreCell.textContent = '---';
     row.appendChild(scoreCell);
     
     // Preferences cell
@@ -453,10 +453,11 @@ function renderTeamCard(team, teamIndex) {
             playerPosition.textContent = teamPlayer.position || 'Unknown';
             playerElement.appendChild(playerPosition);
             
-            const playerScore = document.createElement('span');
-            playerScore.className = 'player-score';
-            playerScore.textContent = formatScore(teamPlayer.overallScore || 0);
-            playerElement.appendChild(playerScore);
+            // Score is only visible in edit/create modal, not in team view
+            // const playerScore = document.createElement('span');
+            // playerScore.className = 'player-score';
+            // playerScore.textContent = formatScore(teamPlayer.overallScore || 0);
+            // playerElement.appendChild(playerScore);
             
             playersContainer.appendChild(playerElement);
         });
