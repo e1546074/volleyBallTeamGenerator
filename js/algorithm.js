@@ -1,28 +1,43 @@
 // algorithm.js - Team generation algorithm and position-specific scoring
 
 // Position weights as defined in the specification
+// All weights are normalized to sum to 1.00 for each position
 const POSITION_WEIGHTS = {
     'Setter': {
-        setting: 0.40,
-        gameIQ: 0.30,
-        passing: 0.20,
-        defense: 0.05,
-        serving: 0.05
+        height: 0.0882,
+        verticalJump: 0.0735,
+        speedAgility: 0.1177,
+        spiking: 0.0588,
+        blocking: 0.0882,
+        setting: 0.1471,
+        passing: 0.1029,
+        defense: 0.1029,
+        serving: 0.0882,
+        gameIQ: 0.1324
     },
     'Middle Blocker': {
-        blocking: 0.30,
-        height: 0.25,
-        spiking: 0.20,
-        gameIQ: 0.15,
-        verticalJump: 0.10
+        height: 0.1308,
+        verticalJump: 0.1163,
+        speedAgility: 0.1018,
+        spiking: 0.0872,
+        blocking: 0.1308,
+        setting: 0.0581,
+        passing: 0.0685,
+        defense: 0.1096,
+        serving: 0.0872,
+        gameIQ: 0.1096
     },
     'Outside Hitter': {
-        spiking: 0.35,
-        passing: 0.20,
-        defense: 0.15,
-        serving: 0.10,
-        speedAgility: 0.10,
-        gameIQ: 0.10
+        height: 0.1018,
+        verticalJump: 0.1163,
+        speedAgility: 0.1163,
+        spiking: 0.1309,
+        blocking: 0.1018,
+        setting: 0.0525,
+        passing: 0.0918,
+        defense: 0.0918,
+        serving: 0.0918,
+        gameIQ: 0.1050
     }
 };
 
