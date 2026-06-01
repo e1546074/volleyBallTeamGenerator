@@ -522,20 +522,66 @@ TestRunner.addTest('assignPlayerToTeam removes position when count reaches zero'
 // generateTeams TESTS
 // ============================================
 
-TestRunner.addTest('generateTeams creates correct number of teams for 12 players', function() {
+// Helper function to create players with proper primary preferences
+function createPlayersWithPreferences(playerCount, teamSize) {
     const players = [];
-    for (let i = 0; i < 12; i++) {
+    const config = algorithm.TEAM_COMPOSITION[teamSize];
+    
+    if (!config) {
+        // Default to 6v6 if no config found
+        return createPlayersWithPreferences(playerCount, 6);
+    }
+    
+    const composition = config.positions;
+    const teamCount = playerCount / teamSize;
+    
+    // Create Setters
+    for (let i = 0; i < (composition['Setter'] || 2) * teamCount; i++) {
         players.push({
-            id: `p${i}`,
-            name: `Player ${i}`,
+            id: `setter-${i}`,
+            name: `Setter ${i}`,
             ratings: {
-                height: 80, verticalJump: 80, speedAgility: 80, spiking: 80, blocking: 80,
-                setting: 80, passing: 80, defense: 80, serving: 80, gameIQ: 80
+                height: 80, verticalJump: 70, speedAgility: 90, spiking: 60, blocking: 50,
+                setting: 90, passing: 80, defense: 70, serving: 80, gameIQ: 90
             },
-            preferences: ['Setter', 'Middle Blocker', 'Outside Hitter'],
+            preferences: ['Setter', 'Middle Blocker'],
             overallScore: 8.0
         });
     }
+    
+    // Create Middle Blockers
+    for (let i = 0; i < (composition['Middle Blocker'] || 2) * teamCount; i++) {
+        players.push({
+            id: `mb-${i}`,
+            name: `Middle Blocker ${i}`,
+            ratings: {
+                height: 90, verticalJump: 80, speedAgility: 70, spiking: 80, blocking: 90,
+                setting: 50, passing: 60, defense: 80, serving: 70, gameIQ: 70
+            },
+            preferences: ['Middle Blocker', 'Setter'],
+            overallScore: 8.0
+        });
+    }
+    
+    // Create Outside Hitters
+    for (let i = 0; i < (composition['Outside Hitter'] || 2) * teamCount; i++) {
+        players.push({
+            id: `oh-${i}`,
+            name: `Outside Hitter ${i}`,
+            ratings: {
+                height: 70, verticalJump: 90, speedAgility: 80, spiking: 90, blocking: 70,
+                setting: 60, passing: 80, defense: 90, serving: 80, gameIQ: 80
+            },
+            preferences: ['Outside Hitter', 'Middle Blocker'],
+            overallScore: 8.0
+        });
+    }
+    
+    return players;
+}
+
+TestRunner.addTest('generateTeams creates correct number of teams for 12 players', function() {
+    const players = createPlayersWithPreferences(12, 6);
     
     const result = algorithm.generateTeams(players);
     TestRunner.assertEqual(result.teamSize, 6, 'Team size should be 6');
@@ -544,19 +590,7 @@ TestRunner.addTest('generateTeams creates correct number of teams for 12 players
 });
 
 TestRunner.addTest('generateTeams creates correct number of teams for 10 players', function() {
-    const players = [];
-    for (let i = 0; i < 10; i++) {
-        players.push({
-            id: `p${i}`,
-            name: `Player ${i}`,
-            ratings: {
-                height: 80, verticalJump: 80, speedAgility: 80, spiking: 80, blocking: 80,
-                setting: 80, passing: 80, defense: 80, serving: 80, gameIQ: 80
-            },
-            preferences: ['Setter', 'Middle Blocker', 'Outside Hitter'],
-            overallScore: 8.0
-        });
-    }
+    const players = createPlayersWithPreferences(10, 5);
     
     const result = algorithm.generateTeams(players);
     TestRunner.assertEqual(result.teamSize, 5, 'Team size should be 5');
@@ -584,23 +618,101 @@ TestRunner.addTest('generateTeams throws error for invalid player count', functi
 });
 
 TestRunner.addTest('generateTeams assigns all players to teams', function() {
-    const players = [];
-    for (let i = 0; i < 12; i++) {
-        players.push({
-            id: `p${i}`,
-            name: `Player ${i}`,
-            ratings: {
-                height: 80, verticalJump: 80, speedAgility: 80, spiking: 80, blocking: 80,
-                setting: 80, passing: 80, defense: 80, serving: 80, gameIQ: 80
-            },
-            preferences: ['Setter', 'Middle Blocker', 'Outside Hitter'],
-            overallScore: 8.0
-        });
-    }
+    const players = createPlayersWithPreferences(12, 6);
     
     const result = algorithm.generateTeams(players);
     const totalAssigned = result.teams.reduce((sum, team) => sum + team.players.length, 0);
     TestRunner.assertEqual(totalAssigned, 12, 'All 12 players should be assigned');
+});
+
+TestRunner.addTest('generateTeams creates correct team composition for 12 players', function() {
+    const players = createPlayersWithPreferences(12, 6);
+    
+    const result = algorithm.generateTeams(players);
+    
+    // Check each team has correct position counts
+    for (const team of result.teams) {
+        const positionCounts = {};
+        team.players.forEach(p => {
+            positionCounts[p.position] = (positionCounts[p.position] || 0) + 1;
+        });
+        
+        TestRunner.assertEqual(positionCounts['Setter'], 2, 'Each team should have 2 Setters');
+        TestRunner.assertEqual(positionCounts['Middle Blocker'], 2, 'Each team should have 2 Middle Blockers');
+        TestRunner.assertEqual(positionCounts['Outside Hitter'], 2, 'Each team should have 2 Outside Hitters');
+    }
+});
+
+TestRunner.addTest('generateTeams creates correct team composition for 10 players', function() {
+    const players = createPlayersWithPreferences(10, 5);
+    
+    const result = algorithm.generateTeams(players);
+    
+    // Check each team has correct position counts for 5v5
+    for (const team of result.teams) {
+        const positionCounts = {};
+        team.players.forEach(p => {
+            positionCounts[p.position] = (positionCounts[p.position] || 0) + 1;
+        });
+        
+        TestRunner.assertEqual(positionCounts['Setter'], 2, 'Each team should have 2 Setters');
+        TestRunner.assertEqual(positionCounts['Middle Blocker'], 2, 'Each team should have 2 Middle Blockers');
+        TestRunner.assertEqual(positionCounts['Outside Hitter'], 1, 'Each team should have 1 Outside Hitter');
+    }
+});
+
+TestRunner.addTest('generateTeams creates correct team composition for 14 players', function() {
+    const players = createPlayersWithPreferences(14, 7);
+    
+    const result = algorithm.generateTeams(players);
+    
+    // Check each team has correct position counts for 7v7
+    for (const team of result.teams) {
+        const positionCounts = {};
+        team.players.forEach(p => {
+            positionCounts[p.position] = (positionCounts[p.position] || 0) + 1;
+        });
+        
+        TestRunner.assertEqual(positionCounts['Setter'], 2, 'Each team should have 2 Setters');
+        TestRunner.assertEqual(positionCounts['Middle Blocker'], 3, 'Each team should have 3 Middle Blockers');
+        TestRunner.assertEqual(positionCounts['Outside Hitter'], 2, 'Each team should have 2 Outside Hitters');
+    }
+});
+
+TestRunner.addTest('generateTeams uses pairing logic for Setters', function() {
+    const players = createPlayersWithPreferences(12, 6);
+    
+    const result = algorithm.generateTeams(players);
+    
+    // Each team should have exactly 2 Setters
+    for (const team of result.teams) {
+        const setters = team.players.filter(p => p.position === 'Setter');
+        TestRunner.assertEqual(setters.length, 2, 'Each team should have exactly 2 Setters');
+    }
+});
+
+TestRunner.addTest('generateTeams uses pairing logic for Middle Blockers', function() {
+    const players = createPlayersWithPreferences(12, 6);
+    
+    const result = algorithm.generateTeams(players);
+    
+    // Each team should have exactly 2 Middle Blockers
+    for (const team of result.teams) {
+        const mbs = team.players.filter(p => p.position === 'Middle Blocker');
+        TestRunner.assertEqual(mbs.length, 2, 'Each team should have exactly 2 Middle Blockers');
+    }
+});
+
+TestRunner.addTest('generateTeams uses pairing logic for Outside Hitters', function() {
+    const players = createPlayersWithPreferences(12, 6);
+    
+    const result = algorithm.generateTeams(players);
+    
+    // Each team should have exactly 2 Outside Hitters
+    for (const team of result.teams) {
+        const ohs = team.players.filter(p => p.position === 'Outside Hitter');
+        TestRunner.assertEqual(ohs.length, 2, 'Each team should have exactly 2 Outside Hitters');
+    }
 });
 
 // ============================================
