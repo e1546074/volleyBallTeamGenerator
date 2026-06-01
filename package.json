@@ -1,0 +1,28 @@
+{
+  "name": "volleyball-team-generator",
+  "version": "1.0.0",
+  "description": "Volleyball team generation algorithm with position-specific scoring",
+  "main": "js/algorithm.js",
+  "scripts": {
+    "test": "node js/algorithm.test.js",
+    "test:watch": "nodemon --exec \"node js/algorithm.test.js\"",
+    "lint": "eslint js/*.js",
+    "lint:fix": "eslint js/*.js --fix",
+    "validate": "npm run lint && npm test"
+  },
+  "keywords": [
+    "volleyball",
+    "team",
+    "generator",
+    "algorithm"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
