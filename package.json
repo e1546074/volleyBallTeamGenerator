@@ -4,11 +4,18 @@
   "description": "Volleyball team generation algorithm with position-specific scoring",
   "main": "js/algorithm.js",
   "scripts": {
-    "test": "node js/algorithm.test.js",
-    "test:watch": "nodemon --exec \"node js/algorithm.test.js\"",
-    "lint": "eslint js/*.js",
-    "lint:fix": "eslint js/*.js --fix",
-    "validate": "npm run lint && npm test"
+    "test": "node js/tests/test_runner.js",
+    "test:unit": "node js/tests/test_runner.js unit",
+    "test:integration": "node js/tests/test_runner.js integration",
+    "test:system": "node js/tests/test_runner.js system",
+    "test:watch": "nodemon --exec \"node js/tests/test_runner.js\"",
+    "test:coverage": "echo 'Coverage reporting would be configured with istanbul/nyc'",
+    "lint": "eslint js/*.js js/tests/**/*.js",
+    "lint:fix": "eslint js/*.js js/tests/**/*.js --fix",
+    "validate": "npm run lint && npm test",
+    "validate:unit": "npm run lint && npm run test:unit",
+    "validate:integration": "npm run lint && npm run test:integration",
+    "validate:system": "npm run lint && npm run test:system"
   },
   "keywords": [
     "volleyball",
