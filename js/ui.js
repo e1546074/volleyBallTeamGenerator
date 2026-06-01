@@ -344,11 +344,6 @@ function renderPlayerRow(player) {
     nameCell.textContent = player.name || 'Unnamed Player';
     row.appendChild(nameCell);
     
-    // Overall Score cell - Only show score in edit/create modal, not in table
-    const scoreCell = document.createElement('td');
-    scoreCell.textContent = '---';
-    row.appendChild(scoreCell);
-    
     // Preferences cell
     const prefsCell = document.createElement('td');
     const preferences = player.preferences || [];
